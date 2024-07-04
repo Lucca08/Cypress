@@ -57,4 +57,4 @@ Aprendendo a usar a ferramenta de Cypress
 
 ## 8-Relatório
 
-![Imagem do Relatório](cypress\screenshotRelatorio\image.png)
+![Imagem do Relatório](cypress/screenshotRelatorio/image.png)
