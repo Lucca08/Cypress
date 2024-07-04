@@ -1,13 +1,27 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
-  chromeWebSecurity: false,
+  screenshotsFolder: 'cypressscreenshots',
+  video: false,
+  screenshotOnRunFailure: true,
+  reporter: 'mochawesome',
+  reporterOptions: {
+    reportDir: 'cypress/reports',
+    overwrite: true, 
+    json: true,
+  },
   e2e: {
     setupNodeEvents(on, config) {
-      // implement node event listeners here
+      on('after:screenshot', (details) => {
+        console.log('Screenshot taken:', details);
+      });
     },
-    baseUrl:'https://erickwendel.github.io/vanilla-js-web-app-example/',
-    testIsolation: false
-    
+    baseUrl: 'https://erickwendel.github.io/vanilla-js-web-app-example/',
   },
+  env: {
+    failOnStatusCode: false,
+  },
+  defaultCommandTimeout: 10000,
+  pageLoadTimeout: 60000,
+  screenshotOnRunSuccess: true,
 });

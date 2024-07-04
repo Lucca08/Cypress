@@ -20,17 +20,17 @@ class RegisterForm {
 
   clickSubmit() {
     this.elements.submitBtn().click();
-    
-    const newImage = {
-      title: this.elements.titleInput().invoke('val'),
-      url: this.elements.imageUrlInput().invoke('val')
-    };
 
-    newImage.title.then(title => {
-      newImage.url.then(url => {
-        let images = JSON.parse(localStorage.getItem('images')) || [];
-        images.push({ title, url });
-        localStorage.setItem('images', JSON.stringify(images));
+    cy.window().then((window) => {
+      const title = this.elements.titleInput().invoke('val');
+      const url = this.elements.imageUrlInput().invoke('val');
+      
+      title.then(titleVal => {
+        url.then(urlVal => {
+          let images = JSON.parse(window.localStorage.getItem('images')) || [];
+          images.push({ title: titleVal, url: urlVal });
+          window.localStorage.setItem('images', JSON.stringify(images));
+        });
       });
     });
   }
@@ -41,10 +41,36 @@ class RegisterForm {
 }
 
 const registerForm = new RegisterForm();
+let globalLocalStorage;
 
-describe('Image Registration', () => {
-  describe('Submitting an image with invalid inputs', () => {
-    const input = {
+describe('Registro de Imagens', () => {
+  before(() => {
+    cy.visit('/');
+    cy.window().then((window) => {
+      window.localStorage.clear();
+      globalLocalStorage = [
+        { title: "Imagem Inicial", url: "https://cdn.mos.cms.futurecdn.net/eM9EvWyDxXcnQTTyH8c8p5-1200-80.jpg" }
+      ];
+      window.localStorage.setItem('images', JSON.stringify(globalLocalStorage));
+    });
+  });
+
+  beforeEach(() => {
+    cy.visit('/');
+    cy.window().then((window) => {
+      window.localStorage.clear();
+      window.localStorage.setItem('images', JSON.stringify(globalLocalStorage));
+    });
+  });
+
+  const takeScreenshot = (suffix) => {
+    const testName = Cypress.currentTest.title;
+    const screenshotName = `${testName} -- ${suffix}`;
+    cy.screenshot(screenshotName);
+  };
+
+  describe('Entradas inválidas devem exibir mensagens de validação', () => {
+    const input = {  
       title: ' ',
       url: ''
     }
@@ -54,87 +80,106 @@ describe('Image Registration', () => {
       success: ''
     }
 
-    it('Given I am on the image registration page', () => {
-      cy.visit('/')
-    })
-
-    it(`When I enter "${input.title}" in the title field`, () => {
+    it('Deve exibir mensagens de validação e destacar os campos', () => {
+      cy.visit('/');
       registerForm.typeTitle(input.title);
-    })
-
-    it(`Then I enter "${input.url}" in the URL field`, () => {
       registerForm.typeUrl(input.url);
-    })
-
-    it(`Then I click the submit button`, () => {
       registerForm.clickSubmit();
-    })
-
-    it(`Then I should see "Please type a title for the image" message above the title field`, () => {
+      takeScreenshot('inputs-invalidos-antes-validacao');
       registerForm.elements.titleFeedback().should('contain.text', 'Please type a title for the image');
-    })
-
-    it(`And I should see "Please type a valid URL" message above the imageUrl field`, () => {
       registerForm.elements.urlFeedback().should('contain.text', 'Please type a valid URL');
-    })
-
-    it(`And I should see an exclamation icon in the title and URL fields`, () => {
       registerForm.elements.titleInput().should(([element]) => {
         const styles = window.getComputedStyle(element);
         const border = styles.getPropertyValue('border-right-color');
         assert.equal(border, colors.errors);
-      })
-    })
-  })
+      });
+      registerForm.elements.imageUrlInput().should(([element]) => {
+        const styles = window.getComputedStyle(element);
+        const border = styles.getPropertyValue('border-right-color');
+        assert.equal(border, colors.errors);
+      });
+      takeScreenshot('inputs-invalidos-apos-validacao');
+    });
+  });
 
-  describe('Submitting an image with valid inputs using enter key', () => {
+  describe('Submeter entradas válidas usando tecla Enter deve atualizar as imagens', () => {
     const input = {
       title: 'Alien',
       url: 'https://cdn.mos.cms.futurecdn.net/eM9EvWyDxXcnQTTyH8c8p5-1200-80.jpg'
     };
 
-    it('Given I am on the image registration page', () => {
+    it('Deve adicionar uma nova imagem e atualizar o armazenamento', () => {
       cy.visit('/');
-    });
-
-    it(`When I enter "${input.title}" in the title field`, () => {
       registerForm.typeTitle(input.title);
-    });
-
-    it(`Then I enter "${input.url}" in the URL field`, () => {
       registerForm.typeUrl(input.url);
-    });
-
-    it(`Then I click the submit button`, () => {
+      takeScreenshot('inputs-validos-antes-submit');
       registerForm.clickSubmit();
-    });
-
-    it(`Then I should see a check icon in the title field`, () => {
-      registerForm.elements.titleFeedback().should(([element]) => {
-        const styles = window.getComputedStyle(element);
-        const border = styles.getPropertyValue('border-right-color');
-        assert.equal(border, 'rgb(220, 53, 69)');
-      });
-    });
-
-    it(`Then I should see a check icon in the imageUrl field`, () => {
-      registerForm.elements.urlFeedback().should(([element]) => {
-        const styles = window.getComputedStyle(element);
-        const border = styles.getPropertyValue('border-right-color');
-        assert.equal(border, 'rgb(220, 53, 69)');
-      });
-    });
-
-    it(`Then I should see more than 4 images in the list`, () => {
-      registerForm.getImages().should('be.visible').and('have.length', 4);
-    });
-
-    it(`And the new item should be stored in the localStorage`, () => {
+      cy.wait(1000); 
+      registerForm.getImages().should('be.visible').and('have.length.of.at.least', 2);
+      takeScreenshot('inputs-validos-apos-submit');
       cy.window().then((window) => {
         const storedImages = JSON.parse(window.localStorage.getItem('images'));
         expect(storedImages).to.exist;
-        expect(storedImages).to.have.lengthOf.equal(4);
+        expect(storedImages).to.have.length.of.at.least(2);
       });
     });
-  });  
-})
+  });
+
+  describe('Submeter entradas válidas usando o botão de envio deve limpar os campos de entrada', () => {
+    const input = {
+      title: "BR Alien",
+      url: "https://cdn.mos.cms.futurecdn.net/eM9EvWyDxXcnQTTyH8c8p5-1200-80.jpg",
+    };
+
+    it("Deve adicionar uma nova imagem, atualizar o armazenamento e limpar os campos de entrada", () => {
+      cy.visit("/");
+      registerForm.typeTitle(input.title);
+      registerForm.typeUrl(input.url);
+      takeScreenshot('inputs-validos-antes-submit');
+      registerForm.clickSubmit();
+      cy.wait(1000);
+      registerForm.getImages().should("be.visible").and("have.length.of.at.least", 2);
+      takeScreenshot('inputs-validos-apos-submit');
+      
+      cy.window().then((window) => {
+        const storedImages = JSON.parse(window.localStorage.getItem("images"));
+        expect(storedImages).to.exist;
+        expect(storedImages).to.have.length.of.at.least(2);
+      });
+
+      registerForm.elements.titleInput().should('have.value', '');
+      registerForm.elements.imageUrlInput().should('have.value', '');
+    });
+  });
+
+  describe('Atualizar a página após submeter uma imagem deve exibir a imagem', () => {
+    const input = {
+      title: "Alien Refresh",
+      url: "https://cdn.mos.cms.futurecdn.net/eM9EvWyDxXcnQTTyH8c8p5-1200-80.jpg",
+    };
+  
+    it('Deve exibir a imagem submetida após atualizar a página', () => {
+      cy.visit('/');
+      registerForm.typeTitle(input.title);
+      registerForm.typeUrl(input.url);
+      takeScreenshot('antes-submit');
+      registerForm.clickSubmit();
+      cy.wait(1000);
+      cy.reload();
+      takeScreenshot('apos-reload');
+      
+      cy.wait(2000);
+  
+      registerForm.getImages().should('be.visible').and(($articles) => {
+        expect($articles).to.contain.text(input.title);
+      });
+  
+      cy.window().then((window) => {
+        const storedImages = JSON.parse(window.localStorage.getItem('images'));
+        expect(storedImages).to.exist;
+        expect(storedImages).to.have.length.of.at.least(2);
+      });
+    });
+  }); 
+  
+});

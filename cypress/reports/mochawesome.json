@@ -1,0 +1,241 @@
+{
+  "stats": {
+    "suites": 5,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-07-04T18:05:11.835Z",
+    "end": "2024-07-04T18:05:22.635Z",
+    "duration": 10800,
+    "testsRegistered": 4,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "bff7ecf0-7744-4574-ae9f-29752adde0bc",
+      "title": "",
+      "fullFile": "cypress\\e2e\\app.cy.js",
+      "file": "cypress\\e2e\\app.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "2c705d48-3773-4ba3-854f-5fe47d063443",
+          "title": "Image Registration",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "36eb02f4-ed0c-41dd-9003-04d00d2fe2ba",
+              "title": "Submitting an image with invalid inputs",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "Given I am on the image registration page",
+                  "fullTitle": "Image Registration Submitting an image with invalid inputs Given I am on the image registration page",
+                  "timedOut": null,
+                  "duration": 926,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.visit('/');\nregisterForm.typeTitle(input.title);\nregisterForm.typeUrl(input.url);\nregisterForm.clickSubmit();\nregisterForm.elements.titleFeedback().should('contain.text', 'Please type a title for the image');\nregisterForm.elements.urlFeedback().should('contain.text', 'Please type a valid URL');\nregisterForm.elements.titleInput().should(([element]) => {\n  const styles = window.getComputedStyle(element);\n  const border = styles.getPropertyValue('border-right-color');\n  assert.equal(border, colors.errors);\n});\nregisterForm.elements.imageUrlInput().should(([element]) => {\n  const styles = window.getComputedStyle(element);\n  const border = styles.getPropertyValue('border-right-color');\n  assert.equal(border, colors.errors);\n});",
+                  "err": {},
+                  "uuid": "41379208-b120-438a-9f35-8fc365c8c392",
+                  "parentUUID": "36eb02f4-ed0c-41dd-9003-04d00d2fe2ba",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "41379208-b120-438a-9f35-8fc365c8c392"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 926,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "94d33612-07c4-440f-b6f2-4e1a8b03c53d",
+              "title": "Submitting an image with valid inputs using enter key",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "Given I am on the image registration page",
+                  "fullTitle": "Image Registration Submitting an image with valid inputs using enter key Given I am on the image registration page",
+                  "timedOut": null,
+                  "duration": 2508,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.visit('/');\nregisterForm.typeTitle(input.title);\nregisterForm.typeUrl(input.url);\nregisterForm.clickSubmit();\ncy.wait(1000);\nregisterForm.getImages().should('be.visible').and('have.length.of.at.least', 2);\ncy.window().then(window => {\n  const storedImages = JSON.parse(window.localStorage.getItem('images'));\n  expect(storedImages).to.exist;\n  expect(storedImages).to.have.length.of.at.least(2);\n});",
+                  "err": {},
+                  "uuid": "90c2136b-ba93-4564-8b36-370a579d2098",
+                  "parentUUID": "94d33612-07c4-440f-b6f2-4e1a8b03c53d",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "90c2136b-ba93-4564-8b36-370a579d2098"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 2508,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "01d815d7-babf-467a-a21e-a2a56b3b84a2",
+              "title": "Submitting an image with valid inputs using the submit button",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "Given I am on the image registration page",
+                  "fullTitle": "Image Registration Submitting an image with valid inputs using the submit button Given I am on the image registration page",
+                  "timedOut": null,
+                  "duration": 2507,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.visit(\"/\");\nregisterForm.typeTitle(input.title);\nregisterForm.typeUrl(input.url);\nregisterForm.clickSubmit();\ncy.wait(1000);\nregisterForm.getImages().should(\"be.visible\").and(\"have.length.of.at.least\", 2);\ncy.window().then(window => {\n  const storedImages = JSON.parse(window.localStorage.getItem(\"images\"));\n  expect(storedImages).to.exist;\n  expect(storedImages).to.have.length.of.at.least(2);\n});\nregisterForm.elements.titleInput().should('have.value', '');\nregisterForm.elements.imageUrlInput().should('have.value', '');",
+                  "err": {},
+                  "uuid": "34f766ef-e0da-4a12-baa0-d28603e51b87",
+                  "parentUUID": "01d815d7-babf-467a-a21e-a2a56b3b84a2",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "34f766ef-e0da-4a12-baa0-d28603e51b87"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 2507,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "72100543-fca9-4350-927b-3e0d5eee79e9",
+              "title": "Refreshing the page after submitting an image by clicking the submit button",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "Given I am on the image registration page",
+                  "fullTitle": "Image Registration Refreshing the page after submitting an image by clicking the submit button Given I am on the image registration page",
+                  "timedOut": null,
+                  "duration": 4661,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.visit('/');\nregisterForm.typeTitle(input.title);\nregisterForm.typeUrl(input.url);\nregisterForm.clickSubmit();\ncy.wait(1000);\ncy.reload();\ncy.wait(2000);\nregisterForm.getImages().should('be.visible').and($articles => {\n  expect($articles).to.contain.text(input.title);\n});\ncy.window().then(window => {\n  const storedImages = JSON.parse(window.localStorage.getItem('images'));\n  expect(storedImages).to.exist;\n  expect(storedImages).to.have.length.of.at.least(2);\n});",
+                  "err": {},
+                  "uuid": "668fc4f2-a72b-429d-83b1-977eb94dc997",
+                  "parentUUID": "72100543-fca9-4350-927b-3e0d5eee79e9",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "668fc4f2-a72b-429d-83b1-977eb94dc997"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 4661,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": true,
+        "html": true,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
